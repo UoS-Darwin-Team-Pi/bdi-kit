@@ -3,6 +3,7 @@ from bdikit.config import get_device
 import numpy as np
 import pandas as pd
 import torch
+import argparse
 from bdikit.models.contrastive_learning.cl_models import (
     BarlowTwinsSimCLR,
 )
@@ -45,6 +46,8 @@ class ContrastiveLearningAPI(ColumnEmbedder):
         self.model = self.load_checkpoint()
 
     def load_checkpoint(self, lm: str = "roberta"):
+        # Fix torch load error by adding argparse namespace
+        torch.serialization.add_safe_globals([argparse.Namespace])
         ckpt = torch.load(self.model_path, map_location=torch.device("cpu"))
         scale_loss = 0.1
         lambd = 3.9
